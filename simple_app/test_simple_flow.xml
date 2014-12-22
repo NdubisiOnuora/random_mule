@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:core="http://www.mulesoft.org/schema/mule/core" 
+      xmlns:context="http://www.springframework.org/schema/context"
+	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:mock="http://www.mulesoft.org/schema/mule/mock" 
+      xmlns:munit="http://www.mulesoft.org/schema/mule/munit" 
+      xmlns="http://www.mulesoft.org/schema/mule/core" 
+      xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	  xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	  xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd">
+    <spring:beans>
+        <context:property-placeholder ignore-resource-not-found="true" location="classpath:simple_app.properties" />
+        <spring:import resource="classpath:simple_flow.xml"/>
+        <spring:import resource="classpath:external_flows.xml"/>
+		    <spring:import resource="global_connector_endpoints.xml"/>
+    </spring:beans>
+    <munit:config doc:name="Munit configuration"/>
+    <mock:config/>
+    <munit:test name="healthcheckCall" description="">
+
+		<mock:when messageProcessor="sub-flow" doc:name="Mock">
+            <mock:with-attributes>
+                <mock:with-attribute whereValue-ref="simple_flow_healthcheck" name="name"/>
+            </mock:with-attributes>
+            <mock:then-return payload-ref="#[string:Healthy90]"/>
+
+        </mock:when>
+        <munit:set payload-ref="#[string:'']" doc:name="Set Message">
+	    	<munit:inbound-properties>
+	    		<munit:inbound-property key="http.method" value-ref="#['GET']"/>
+	    		<munit:inbound-property key="http.request" value-ref="#['0.0.0.0:7054/lb_healthcheck']"/>
+	    		<munit:inbound-property key="MULE_ORIGINATING_ENDPOINT" value-ref="#['healthcheck']"/>
+	    	</munit:inbound-properties>
+    	</munit:set>
+        <flow-ref name='simple_flow' doc:name="simple_flow"/>
+        <!-- <byte-array-to-string-transformer doc:name="Byte Array to String" /> -->
+        <!-- Extract the body message and ensure that it equals what we set it. -->
+        <set-variable variableName="response" value="#[payload]" doc:name="Set Response Variable"/>
+        <set-variable variableName="body" value="#[groovy:((org.mule.transport.http.HttpResponse)payload).getBodyAsString()]" doc:name="Set Body Variable"/>
+        <munit:assert-on-equals expected-ref='#[string:[Healthy]]' value-ref="#[body]" doc:name="Assert Payload Body"/>
+    	<!-- <munit:assert-that payloadIs-ref='#[string:["Healthy"]]' doc:name="Assert Payload"/> --> 
+    </munit:test>
+</mule>
