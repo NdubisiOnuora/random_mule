@@ -15,19 +15,19 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
 
-<http:connector name="http_simple_flow_connector" doc:name="http_simple_flow_connector" keepAlive="true">
-		<receiver-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN" /> 
-		<dispatcher-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN"/> 
-</http:connector>
-
-<http:connector name="http_another_flow_connector" doc:name="http_another_flow_connector" keepAlive="true">
-		<receiver-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN" /> 
-		<dispatcher-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN"/> 
-</http:connector>
-    
-<http:endpoint name="process_simple_flow" exchange-pattern="request-response" address="${process_simple_flow_gateway}" responseTimeout="60000" contentType="application/json" connector-ref="http_simple_flow_connector" doc:name="process_simple_flow_http"/>
-<http:endpoint name="healthcheck" exchange-pattern="request-response" address="${simple_flow_healthcheck}" responseTimeout="60000" contentType="text/plain" connector-ref="http_simple_flow_connector" doc:name="healthcheck_service_http"/>
-
-<http:endpoint name="another_flow_endpoint" exchange-pattern="request-response" address="${another_flow_source}" responseTimeout="60000" contentType="text/plain" connector-ref="http_another_flow_connector" doc:name="another_flow_http"/>
+	<http:connector name="http_simple_flow_connector" doc:name="http_simple_flow_connector" keepAlive="true">
+			<receiver-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN" /> 
+			<dispatcher-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN"/> 
+	</http:connector>
+	
+	<http:connector name="http_another_flow_connector" doc:name="http_another_flow_connector" keepAlive="true">
+			<receiver-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN" /> 
+			<dispatcher-threading-profile maxThreadsActive="${connector_concurrency}" threadTTL="1000" doThreading="true" maxThreadsIdle="0" poolExhaustedAction="RUN"/> 
+	</http:connector>
+	    
+	<http:endpoint name="process_simple_flow" exchange-pattern="request-response" address="${process_simple_flow_gateway}" responseTimeout="60000" contentType="application/json" connector-ref="http_simple_flow_connector" doc:name="process_simple_flow_http"/>
+	<http:endpoint name="healthcheck" exchange-pattern="request-response" address="${simple_flow_healthcheck}" responseTimeout="60000" contentType="text/plain" connector-ref="http_simple_flow_connector" doc:name="healthcheck_service_http"/>
+	
+	<http:endpoint name="another_flow_endpoint" exchange-pattern="request-response" address="${another_flow_source}" responseTimeout="60000" contentType="text/plain" connector-ref="http_another_flow_connector" doc:name="another_flow_http"/>
 
 </mule>
