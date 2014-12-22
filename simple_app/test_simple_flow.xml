@@ -42,7 +42,7 @@ http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/mu
         <!-- Extract the body message and ensure that it equals what we set it. -->
         <set-variable variableName="response" value="#[payload]" doc:name="Set Response Variable"/>
         <set-variable variableName="body" value="#[groovy:((org.mule.transport.http.HttpResponse)payload).getBodyAsString()]" doc:name="Set Body Variable"/>
-        <munit:assert-on-equals expected-ref='#[string:[Healthy]]' value-ref="#[body]" doc:name="Assert Payload Body"/>
+        <munit:assert-on-equals expected-ref='#[string:Healthy90]' value-ref="#[body]" doc:name="Assert Payload Body"/>
     	<!-- <munit:assert-that payloadIs-ref='#[string:["Healthy"]]' doc:name="Assert Payload"/> --> 
     </munit:test>
 </mule>
