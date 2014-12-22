@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.5.2"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd">
+
+    <flow name="simple_flow" doc:name="simple_flow">
+    	<composite-source doc:name="Simple Flow Request Handling">
+    		<inbound-endpoint ref="process_simple_flow" doc:name="process_simple_flow_http"/>
+    		<inbound-endpoint ref="healthcheck" doc:name="healthcheck_service_http"/>
+    	</composite-source>
+        <byte-array-to-string-transformer doc:name="Byte Array to String"/>
+        <logger message="#[message]" level="INFO" doc:name="Debug Logger"/>
+        <choice doc:name="Reroute Message Based on Inbound Endpoint">
+			<when expression="#[message.inboundProperties['MULE_ORIGINATING_ENDPOINT'] == 'healthcheck']">
+				<flow-ref name="simple_flow_healthcheck" doc:name="Simple_Flow_Healthcheck"/>
+			</when>
+			<when expression="#[message.inboundProperties['MULE_ORIGINATING_ENDPOINT'] == 'process_simple_flow']">
+				<flow-ref name="initialize_session_variables" doc:name="Initialize Session Variables"/>
+		    	<flow-ref name="save_data" doc:name="Save Data"/>
+			</when>
+			<otherwise>
+				<logger message="Invalid originating endpoint for Simple Flow" doc:name="Logger"/>
+			</otherwise>
+		</choice>
+    </flow>
